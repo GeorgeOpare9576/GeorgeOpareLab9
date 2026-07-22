@@ -75,7 +75,15 @@ public class Ge1orgeFragment extends Fragment {
         });
 
         deleteButton.setOnClickListener(v -> {
-            // delete — next commit
+            if (courseList.isEmpty()) {
+                Toast.makeText(requireContext(), R.string.geo_no_data,
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            courseList.clear();                       // clear the list
+            adapter.notifyDataSetChanged();           // update the view immediately
+            prefs.edit().remove(GEO_KEY_COURSES).apply();  // clear SharedPreferences
         });
 
         return view;
