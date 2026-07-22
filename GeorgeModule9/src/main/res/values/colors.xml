@@ -4,4 +4,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="geo_splash_bg">#FFFFFF</color>
     <color name="geo_menu_text">#FF0000</color>
+    <color name="geo_file_list">#009688</color>
 </resources>
