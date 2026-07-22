@@ -9,4 +9,7 @@
     <string name="geo_options">Options</string>
     <string name="geo_sub_toggle">Geo</string>
     <string name="geo_sub_search">Opa</string>
+    <string name="geo_search_hint">Enter search phrase</string>
+    <string name="geo_search_button">Search</string>
+    <string name="geo_search_empty">George Opare - Enter a search phrase</string>
 </resources>

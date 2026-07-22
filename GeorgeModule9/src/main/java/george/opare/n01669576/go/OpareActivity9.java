@@ -1,6 +1,9 @@
 // George Opare n01669576
 package george.opare.n01669576.go;
 
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -8,11 +11,17 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
@@ -37,7 +46,6 @@ public class OpareActivity9 extends AppCompatActivity {
         splashScreen.setKeepOnScreenCondition(() -> keepSplash);
         new Handler(Looper.getMainLooper()).postDelayed(() -> keepSplash = false, 3000);
 
-        // apply the saved mode before the UI is built
         prefs = getSharedPreferences(GEO_PREFS, MODE_PRIVATE);
         boolean darkMode = prefs.getBoolean(GEO_KEY_DARK, false);
         AppCompatDelegate.setDefaultNightMode(darkMode
@@ -109,19 +117,55 @@ public class OpareActivity9 extends AppCompatActivity {
         if (id == R.id.geoMenuToggle) {
             boolean currentlyDark = prefs.getBoolean(GEO_KEY_DARK, false);
             boolean newMode = !currentlyDark;
-
             prefs.edit().putBoolean(GEO_KEY_DARK, newMode).apply();
-
             AppCompatDelegate.setDefaultNightMode(newMode
                     ? AppCompatDelegate.MODE_NIGHT_YES
                     : AppCompatDelegate.MODE_NIGHT_NO);
             return true;
 
         } else if (id == R.id.geoMenuSearch) {
-            // search dialog — next commit
+            showSearchDialog();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showSearchDialog() {
+        View dialogView = LayoutInflater.from(this)
+                .inflate(R.layout.geo_search_dialog, null);
+        EditText searchInput = dialogView.findViewById(R.id.geoSearchInput);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setPositiveButton(R.string.geo_search_button, null)
+                .create();
+
+        dialog.show();
+
+        // set listener after show() so the dialog stays open on empty input
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String phrase = searchInput.getText().toString().trim();
+
+            if (phrase.isEmpty()) {
+                Toast.makeText(this, R.string.geo_search_empty, Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            hideKeyboard(searchInput);
+            dialog.dismiss();
+
+            Intent searchIntent = new Intent(Intent.ACTION_WEB_SEARCH);
+            searchIntent.putExtra(SearchManager.QUERY, phrase);
+            startActivity(searchIntent);
+        });
+    }
+
+    private void hideKeyboard(View view) {
+        InputMethodManager imm =
+                (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 }
