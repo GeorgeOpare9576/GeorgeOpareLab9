@@ -11,7 +11,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "george.opare.n01669576.georgelab9"
+        applicationId "george.opare.n01669576.go"
         minSdk 31
         targetSdk 36
         versionCode 1

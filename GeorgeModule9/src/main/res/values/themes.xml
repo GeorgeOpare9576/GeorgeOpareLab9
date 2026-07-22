@@ -9,7 +9,7 @@
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/geo_splash_bg</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash</item>
+        <item name="android:windowBackground">@drawable/splash</item>
         <item name="postSplashScreenTheme">@style/Theme.GeorgeLab9</item>
     </style>
 </resources>
