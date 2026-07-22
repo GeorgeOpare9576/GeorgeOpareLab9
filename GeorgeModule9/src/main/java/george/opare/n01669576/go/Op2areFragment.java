@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ public class Op2areFragment extends Fragment {
     private EditText fileNameInput;
     private EditText fileContentsInput;
     private ToggleButton persistentToggle;
+    private TextView fileListText;
     private View rootView;
 
     @Nullable
@@ -35,6 +37,7 @@ public class Op2areFragment extends Fragment {
         fileNameInput = view.findViewById(R.id.geoFileName);
         fileContentsInput = view.findViewById(R.id.geoFileContents);
         persistentToggle = view.findViewById(R.id.geoPersistentToggle);
+        fileListText = view.findViewById(R.id.geoFileList);
 
         Button createButton = view.findViewById(R.id.geoCreateFile);
         Button deleteButton = view.findViewById(R.id.geoDeleteFile);
@@ -61,9 +64,16 @@ public class Op2areFragment extends Fragment {
             readFile();
         });
 
+        // switching storage shows that storage's files
+        persistentToggle.setOnCheckedChangeListener((buttonView, isChecked) -> refreshFileList());
+
+        // show any files already on the device when the screen opens
+        refreshFileList();
+
         return view;
     }
 
+    // persistent = internal files dir, otherwise cache dir
     private File getTargetDirectory() {
         return persistentToggle.isChecked()
                 ? requireContext().getFilesDir()
@@ -74,6 +84,7 @@ public class Op2areFragment extends Fragment {
         return fileNameInput.getText().toString().trim();
     }
 
+    // one shared check so the snackbar code is not repeated
     private boolean isFileNameMissing() {
         if (getFileName().isEmpty()) {
             Snackbar.make(rootView, R.string.geo_name_missing, Snackbar.LENGTH_INDEFINITE)
@@ -85,14 +96,32 @@ public class Op2areFragment extends Fragment {
     }
 
     private void createFile() {
-        File file = new File(getTargetDirectory(), getFileName());
+        File dir = getTargetDirectory();
+        File file = new File(dir, getFileName());
+
+        if (file.exists()) {
+            Toast.makeText(requireContext(), R.string.geo_file_exists,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // no more than 3 files at a time - delete the oldest before creating the 4th
+        File[] existing = dir.listFiles();
+        if (existing != null && existing.length >= 3) {
+            File oldest = existing[0];
+            for (File f : existing) {
+                if (f.lastModified() < oldest.lastModified()) {
+                    oldest = f;
+                }
+            }
+            oldest.delete();
+        }
+
         try {
             if (file.createNewFile()) {
                 Toast.makeText(requireContext(), R.string.geo_file_created,
                         Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(requireContext(), R.string.geo_file_exists,
-                        Toast.LENGTH_SHORT).show();
+                refreshFileList();
             }
         } catch (IOException e) {
             Toast.makeText(requireContext(), R.string.geo_file_error,
@@ -105,6 +134,7 @@ public class Op2areFragment extends Fragment {
         if (file.exists() && file.delete()) {
             Toast.makeText(requireContext(), R.string.geo_file_deleted,
                     Toast.LENGTH_SHORT).show();
+            refreshFileList();
         } else {
             Toast.makeText(requireContext(), R.string.geo_file_not_found,
                     Toast.LENGTH_SHORT).show();
@@ -126,6 +156,7 @@ public class Op2areFragment extends Fragment {
             fileContentsInput.setText("");          // clear the field after writing
             Toast.makeText(requireContext(), R.string.geo_file_written,
                     Toast.LENGTH_SHORT).show();
+            refreshFileList();
         } catch (IOException e) {
             Toast.makeText(requireContext(), R.string.geo_file_error,
                     Toast.LENGTH_SHORT).show();
@@ -151,5 +182,18 @@ public class Op2areFragment extends Fragment {
             Toast.makeText(requireContext(), R.string.geo_file_error,
                     Toast.LENGTH_SHORT).show();
         }
+    }
+
+    // show the names of files currently on the device, one per line
+    private void refreshFileList() {
+        File[] files = getTargetDirectory().listFiles();
+        StringBuilder names = new StringBuilder();
+
+        if (files != null) {
+            for (File f : files) {
+                names.append(f.getName()).append("\n");
+            }
+        }
+        fileListText.setText(names.toString().trim());
     }
 }
