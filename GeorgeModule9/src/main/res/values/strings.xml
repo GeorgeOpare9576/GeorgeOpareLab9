@@ -18,4 +18,6 @@
     <string name="geo_add">Add</string>
     <string name="geo_delete">Delete</string>
     <string name="geo_no_data">No data to delete</string>
+    <string name="geo_enter_course">George Opare - Enter course name and description</string>
+    <string name="geo_saved">Courses saved</string>
 </resources>
