@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/geoMenuOptions"
+        android:title="@string/geo_options"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/geoMenuToggle"
+                android:icon="@drawable/ic_toggle"
+                android:title="@string/geo_sub_toggle" />
+            <item
+                android:id="@+id/geoMenuSearch"
+                android:icon="@drawable/ic_search"
+                android:title="@string/geo_sub_search" />
+        </menu>
+    </item>
+
+</menu>

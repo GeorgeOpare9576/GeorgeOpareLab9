@@ -1,12 +1,20 @@
 // George Opare n01669576
 package george.opare.n01669576.go;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.SubMenu;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -59,5 +67,40 @@ public class OpareActivity9 extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.geoContainer, fragment)
                 .commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.geo_toolbar_menu, menu);
+
+        // keep sub-menu text and icons visible in both light and dark mode
+        SubMenu sub = menu.findItem(R.id.geoMenuOptions).getSubMenu();
+        if (sub != null) {
+            int color = ContextCompat.getColor(this, R.color.geo_menu_text);
+            for (int i = 0; i < sub.size(); i++) {
+                MenuItem item = sub.getItem(i);
+                SpannableString title = new SpannableString(item.getTitle());
+                title.setSpan(new ForegroundColorSpan(color), 0, title.length(), 0);
+                item.setTitle(title);
+                Drawable icon = item.getIcon();
+                if (icon != null) {
+                    icon.setTint(color);
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.geoMenuToggle) {
+            // dark mode toggle — next commit
+            return true;
+        } else if (id == R.id.geoMenuSearch) {
+            // search dialog — commit after
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

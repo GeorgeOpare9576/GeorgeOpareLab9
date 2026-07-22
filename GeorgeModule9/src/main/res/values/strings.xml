@@ -6,4 +6,7 @@
     <string name="geo_menu_2">Op2are</string>
     <string name="geo_open_drawer">Open navigation drawer</string>
     <string name="geo_close_drawer">Close navigation drawer</string>
+    <string name="geo_options">Options</string>
+    <string name="geo_sub_toggle">Geo</string>
+    <string name="geo_sub_search">Opa</string>
 </resources>
