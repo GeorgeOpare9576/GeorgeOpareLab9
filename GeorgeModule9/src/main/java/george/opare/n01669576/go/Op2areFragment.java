@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class Op2areFragment extends Fragment {
@@ -51,18 +53,17 @@ public class Op2areFragment extends Fragment {
 
         writeButton.setOnClickListener(v -> {
             if (isFileNameMissing()) return;
-            // write — next commit
+            writeFile();
         });
 
         readButton.setOnClickListener(v -> {
             if (isFileNameMissing()) return;
-            // read — next commit
+            readFile();
         });
 
         return view;
     }
 
-    // persistent = internal files dir, otherwise cache dir
     private File getTargetDirectory() {
         return persistentToggle.isChecked()
                 ? requireContext().getFilesDir()
@@ -73,7 +74,6 @@ public class Op2areFragment extends Fragment {
         return fileNameInput.getText().toString().trim();
     }
 
-    // one shared check so the snackbar code is not repeated
     private boolean isFileNameMissing() {
         if (getFileName().isEmpty()) {
             Snackbar.make(rootView, R.string.geo_name_missing, Snackbar.LENGTH_INDEFINITE)
@@ -88,26 +88,68 @@ public class Op2areFragment extends Fragment {
         File file = new File(getTargetDirectory(), getFileName());
         try {
             if (file.createNewFile()) {
-                Toast.makeText(requireContext(),
-                        "Created: " + file.getName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.geo_file_created,
+                        Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(requireContext(),
-                        "File already exists", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.geo_file_exists,
+                        Toast.LENGTH_SHORT).show();
             }
         } catch (IOException e) {
-            Toast.makeText(requireContext(),
-                    "Error creating file", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.geo_file_error,
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
     private void deleteFile() {
         File file = new File(getTargetDirectory(), getFileName());
         if (file.exists() && file.delete()) {
-            Toast.makeText(requireContext(),
-                    "Deleted: " + file.getName(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.geo_file_deleted,
+                    Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(requireContext(),
-                    "File not found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.geo_file_not_found,
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void writeFile() {
+        String content = fileContentsInput.getText().toString().trim();
+
+        if (content.isEmpty()) {
+            Toast.makeText(requireContext(), R.string.geo_content_missing,
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        File file = new File(getTargetDirectory(), getFileName());
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(content.getBytes());
+            fileContentsInput.setText("");          // clear the field after writing
+            Toast.makeText(requireContext(), R.string.geo_file_written,
+                    Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(requireContext(), R.string.geo_file_error,
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void readFile() {
+        File file = new File(getTargetDirectory(), getFileName());
+
+        if (!file.exists()) {
+            Toast.makeText(requireContext(), R.string.geo_file_not_found,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try (FileInputStream fis = new FileInputStream(file)) {
+            byte[] buffer = new byte[(int) file.length()];
+            int read = fis.read(buffer);
+            if (read > 0) {
+                fileContentsInput.setText(new String(buffer));
+            }
+        } catch (IOException e) {
+            Toast.makeText(requireContext(), R.string.geo_file_error,
+                    Toast.LENGTH_SHORT).show();
         }
     }
 }
