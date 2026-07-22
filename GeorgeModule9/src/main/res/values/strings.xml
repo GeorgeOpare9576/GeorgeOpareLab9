@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">GeorgeLab9</string>
+    <string name="geo_full_name">George Opare</string>
+    <string name="geo_email">n01669576@humber.ca</string>
+    <string name="geo_menu_1">Ge1orge</string>
+    <string name="geo_menu_2">Op2are</string>
+    <string name="geo_open_drawer">Open navigation drawer</string>
+    <string name="geo_close_drawer">Close navigation drawer</string>
 </resources>
