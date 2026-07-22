@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- George Opare n01669576 -->
+<resources>
+    <string name="geo_save">Enregistrer</string>
+    <string name="geo_add">Ajouter</string>
+    <string name="geo_delete">Supprimer</string>
+    <string name="geo_options">Choix</string>
+</resources>
