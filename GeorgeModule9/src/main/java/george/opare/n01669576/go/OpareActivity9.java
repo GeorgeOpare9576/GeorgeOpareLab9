@@ -1,6 +1,7 @@
 // George Opare n01669576
 package george.opare.n01669576.go;
 
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +14,7 @@ import android.view.SubMenu;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.splashscreen.SplashScreen;
@@ -22,14 +24,25 @@ import com.google.android.material.navigation.NavigationView;
 
 public class OpareActivity9 extends AppCompatActivity {
 
+    public static final String GEO_PREFS = "geoPrefs";
+    public static final String GEO_KEY_DARK = "geoDarkMode";
+
     private boolean keepSplash = true;
     private DrawerLayout drawerLayout;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         splashScreen.setKeepOnScreenCondition(() -> keepSplash);
         new Handler(Looper.getMainLooper()).postDelayed(() -> keepSplash = false, 3000);
+
+        // apply the saved mode before the UI is built
+        prefs = getSharedPreferences(GEO_PREFS, MODE_PRIVATE);
+        boolean darkMode = prefs.getBoolean(GEO_KEY_DARK, false);
+        AppCompatDelegate.setDefaultNightMode(darkMode
+                ? AppCompatDelegate.MODE_NIGHT_YES
+                : AppCompatDelegate.MODE_NIGHT_NO);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -56,7 +69,6 @@ public class OpareActivity9 extends AppCompatActivity {
             return true;
         });
 
-        // Ge1orge fragment shows by default after splash
         if (savedInstanceState == null) {
             showFragment(new Ge1orgeFragment());
             navView.setCheckedItem(R.id.geoNav1);
@@ -73,7 +85,6 @@ public class OpareActivity9 extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.geo_toolbar_menu, menu);
 
-        // keep sub-menu text and icons visible in both light and dark mode
         SubMenu sub = menu.findItem(R.id.geoMenuOptions).getSubMenu();
         if (sub != null) {
             int color = ContextCompat.getColor(this, R.color.geo_menu_text);
@@ -94,13 +105,23 @@ public class OpareActivity9 extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
+
         if (id == R.id.geoMenuToggle) {
-            // dark mode toggle — next commit
+            boolean currentlyDark = prefs.getBoolean(GEO_KEY_DARK, false);
+            boolean newMode = !currentlyDark;
+
+            prefs.edit().putBoolean(GEO_KEY_DARK, newMode).apply();
+
+            AppCompatDelegate.setDefaultNightMode(newMode
+                    ? AppCompatDelegate.MODE_NIGHT_YES
+                    : AppCompatDelegate.MODE_NIGHT_NO);
             return true;
+
         } else if (id == R.id.geoMenuSearch) {
-            // search dialog — commit after
+            // search dialog — next commit
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 }
