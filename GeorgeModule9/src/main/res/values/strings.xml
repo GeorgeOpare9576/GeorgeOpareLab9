@@ -12,4 +12,10 @@
     <string name="geo_search_hint">Enter search phrase</string>
     <string name="geo_search_button">Search</string>
     <string name="geo_search_empty">George Opare - Enter a search phrase</string>
+    <string name="geo_hint_course_name">Enter course Name</string>
+    <string name="geo_hint_course_desc">Enter Course Description</string>
+    <string name="geo_save">Save</string>
+    <string name="geo_add">Add</string>
+    <string name="geo_delete">Delete</string>
+    <string name="geo_no_data">No data to delete</string>
 </resources>
