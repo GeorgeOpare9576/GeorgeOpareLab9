@@ -1,4 +1,4 @@
-package george.opare.n01669576.georgelab9;
+package george.opare.n01669576.go;
 
 import org.junit.Test;
 

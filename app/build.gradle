@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'george.opare.n01669576.georgelab9'
+    namespace 'george.opare.n01669576.go'
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
